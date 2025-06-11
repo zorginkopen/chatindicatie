@@ -1,25 +1,31 @@
+document.getElementById("chat-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-async function sendMessage() {
-    const input = document.getElementById("messageInput");
-    const chatbox = document.getElementById("chatbox");
-    const message = input.value;
+  const userInput = document.getElementById("user-input").value;
+  const responseElement = document.getElementById("response");
 
-    chatbox.innerHTML += "<div><b>Jij:</b> " + message + "</div>";
+  if (!userInput) {
+    responseElement.innerText = "Voer een bericht in.";
+    return;
+  }
 
-    try {
-        const response = await fetch("https://chatfunctionindicatie2.azurewebsites.net/api/HttpTrigger1?code=yJKWV12ehMNPVvAfbi__9jRi0MTjoC7u8O6PdxEcn8bgAzFuUPLAjw==", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ message: message })
-        });
+  try {
+    const response = await fetch("https://chatfunctionindicatie2.azurewebsites.net/api/HttpTrigger1?code=yJKWV12ehMNPVvAfbi__9jRi0MTjoC7u8O6PdxEcn8bgAzFuUPLAjw==", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: userInput })
+    });
 
-        const data = await response.text();
-        chatbox.innerHTML += "<div><b>Bot:</b> " + data + "</div>";
-    } catch (error) {
-        chatbox.innerHTML += "<div style='color:red;'>Fout: " + error.message + "</div>";
+    if (!response.ok) {
+      throw new Error(`HTTP fout: ${response.status}`);
     }
 
-    input.value = "";
-}
+    const data = await response.text(); // gebruik text() in plaats van json()
+    responseElement.innerText = data;
+  } catch (error) {
+    console.error("Fout bij het ophalen van de data:", error);
+    responseElement.innerText = "Fout: " + error.message;
+  }
+});
