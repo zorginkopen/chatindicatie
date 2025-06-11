@@ -15,7 +15,7 @@ async function sendMessage() {
             body: JSON.stringify({ message: message })
         });
 
-        const data = await response.json();
+        const data = await response.text();
         chatbox.innerHTML += "<div><b>Bot:</b> " + data + "</div>";
     } catch (error) {
         chatbox.innerHTML += "<div style='color:red;'>Fout: " + error.message + "</div>";
